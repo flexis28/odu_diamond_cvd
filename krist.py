@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import math
 import itertools
 class Diamond:
@@ -57,7 +59,7 @@ class Diamond:
         for x in range(0, int(self.maxt / self.dt)):
             self.cc = self.RUN(self.cc)
 
-            if (x%vivod == 0):    
+            if (x%vivod == 0):
                 print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
                 for l in range(0, self.L-1):
                     print l+1, 'SLOI ->',
@@ -67,7 +69,7 @@ class Diamond:
                         print "%i:%1.4e " % (j, self.cc[l][j]),
                     print "C = %1.2e" % v
 
-     #       if (x%vivod == 0):    
+     #       if (x%vivod == 0):
      #           print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
      #           for l in range(0, self.L-1):
      #               v = 0
@@ -113,6 +115,25 @@ class Diamond:
                 d[l][i] = d[l][i] / e
         return d
 
+    def variants(self, *ranges, **kwargs):
+        acc = kwargs.pop('acc', [])
+
+        if not acc:
+            self.vars = []
+
+        if not ranges:
+            self.vars.append(acc)
+        else:
+            ranges = list(ranges)
+            current_range = list(ranges.pop())
+            for i in current_range:
+                self.variants(*ranges, acc = acc + [i])
+
+        if not acc:
+            map(lambda result: result.sort(), self.vars)
+            # TODO: необходимо сохранять порядок элементов таким же, в каком порядке передаём в функцию!!
+            return [list(x) for x in set(tuple(x) for x in self.vars)]
+
     def model(self, c_prev):
         dc = []
         for i in range(self.L):
@@ -120,6 +141,9 @@ class Diamond:
         for l in range(0, self.L-1):
             for a in range(0, self.C):
                 dc[l][a] = 0
+
+        vars_12_78_78 = self.variants([1, 2], [7, 8], [7, 8])
+        vars_78_78 = self.variants([7, 8], [7, 8])
 
         for l in range(0, self.L-1):
         # self.H = count_h(c_prev[l]) * ch
@@ -273,114 +297,47 @@ class Diamond:
             dc[l][5] += (self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
      #       for i in range(0, C):
      #           print dc[l][i]
-            #Migracia vverh
-            #1
-            dc[l+1][1] += (-self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            #2
-            dc[l+1][1] += (-self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            #3
-            dc[l+1][1] += (-self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            #4
-            dc[l+1][1] += (-self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][1] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            #5
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][3] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            #6
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][3] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * (c_prev[l][2]**2)*self.CH3)*2
-            #7
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][3] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            #8
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l+1][3] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)
-            dc[l][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * (c_prev[l][2]**2)*self.CH3)*2
-            #3
-            dc[l+1][2] += (-self.k9 * c_prev[l][7]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)
-            dc[l][7] += (-self.k9 * c_prev[l][7]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*3
-            dc[l+1][4] += (self.k9 * c_prev[l][7]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*2
-            dc[l][6] += (self.k9 * c_prev[l][7]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)
-            #4
-            dc[l+1][2] += (-self.k9 * c_prev[l][8]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)
-            dc[l][7] += (-self.k9 * c_prev[l][8]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*3
-            dc[l+1][4] += (self.k9 * c_prev[l][8]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*2
-            dc[l][6] += (self.k9 * c_prev[l][8]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8]*c_prev[l+1][2]*(c_prev[l][7]**3)*self.CH3)
-            #5
-            #it = [q for q in itertools.product(c_prev[l][8],c_prev[l][7])]
-            #for i in range():
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][5] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)*2
-            dc[l][6] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            #6
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][5] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)*2
-            dc[l][6] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            #7
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][5] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][6] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            #8
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][5] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            dc[l][6] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][5] * c_prev[l][3] *self.CH3)
-            #9
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            #10
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][7] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            #11
-            dc[l+1][2] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l+1][4] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][7] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            #12
-            dc[l+1][2] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)
-            dc[l][3] += (-self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l+1][4] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            dc[l][8] += (self.k9 * c_prev[l][8] * c_prev[l+1][2] * c_prev[l][8] * c_prev[l][3] * c_prev[l][3] *self.CH3)*2
-            #13
+
+
+            for a, b, c in vars_12_78_78:
+                rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
+                dc[l+1][1] += -rate
+                dc[l+1][4] += rate * 2
+                dc[l][2] += -rate * 2
+                dc[l][8] += rate * 2
+
+            for a in [7, 8]:
+                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * (c_prev[l][7]**3)*self.CH3
+                dc[l+1][2] += -rate
+                dc[l][7] += -rate * 3
+                dc[l+1][4] += rate * 2
+                dc[l][6] += rate * 2
+                dc[l][8] += rate
+
+            for a, b in vars_78_78:
+                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * c_prev[l][b] * c_prev[l][5] * c_prev[l][3] * self.CH3
+                dc[l+1][2] += -rate
+                dc[l][5] += -rate
+                dc[l][3] += -rate
+                dc[l+1][4] += rate * 2
+                dc[l][6] += rate
+                dc[l][8] += rate
+
+            for a, b, c in vars_12_78_78:
+                rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][3]**2) * self.CH3
+                dc[l+1][a] += -rate
+                dc[l][3] += -rate * 2
+                if a == 1:
+                    dc[l+1][4] += rate * 2
+                else:
+                    dc[l+1][3] += rate
+                    dc[l+1][4] += rate
+                if c == 7:
+                    dc[l][8] += rate * 3
+                else:
+                    dc[l][8] += rate * 2
+                    dc[l][7] += rate
+
      #       for i in range(0, C):
      #           print dc[l][i]
         #c_next[l][0] = (-self.k1*c_prev[l][0]*self.H + k2*c_prev[l][1]*S + k6*c_prev[l][4]*c_prev[l][3]*cch3*ch3 + k6*(c_prev[l][3]**2)*cch3*ch3 - k8*c_prev[l][8]*c_prev[l][0]*c_prev[l][7] - k8*(c_prev[l][7]**2)*c_prev[l][0])*dt + c_prev[l][0]
