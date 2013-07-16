@@ -36,14 +36,15 @@ class Diamond:
     k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
 
     #ORIGINAL
-    #k1 = 5.2e13 * math.exp(-3360/T)
-    #k2 = 2e13
-    #k4 = 1e12 * math.exp(-352.3/T)
-    #k5 = 4.79e13 * math.exp(-7196.8/T)
-    #k6 = 1e13
-    #k7 = 6.13e13 * math.exp(-18.269/T)
-   # k8 = 0.5
-    #k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
+    # k1 = 5.2e13 * H * math.exp(-3360/T)
+    # k2 = 2e13 * H
+    # k4 = 1e12 * math.exp(-352.3/T)
+    # k4_1 = k4 * 10
+    # k5 = 4.79e13 * math.exp(-7196.8/T)
+    # k6 = 1e13 * CH3
+    # k7 = 6.13e13 * math.exp(-18.269/T)
+    # k8 = 0.5
+    # k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
 
     cc = []
     dc0 = []
@@ -301,13 +302,13 @@ class Diamond:
 
             for a, b, c in vars_12_78_78:
                 rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
-                dc[l+1][1] += -rate
+                dc[l+1][a] += -rate
                 dc[l+1][4] += rate * 2
                 dc[l][2] += -rate * 2
                 dc[l][8] += rate * 2
 
             for a in [7, 8]:
-                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * (c_prev[l][7]**3)*self.CH3
+                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * (c_prev[l][7]**3) * self.CH3
                 dc[l+1][2] += -rate
                 dc[l][7] += -rate * 3
                 dc[l+1][4] += rate * 2
