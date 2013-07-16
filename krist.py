@@ -73,6 +73,7 @@ class Diamond:
                 print ' TOTAL ->',
                 for j in range(0, self.C):
                     print "%i:%1.4e " % (j, toel[j]),
+                print
 
      #       if (x%vivod == 0):
      #           print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
@@ -145,64 +146,71 @@ class Diamond:
 
             #Activacia
             #1
-            dc[l][0] += (-self.k1 * c_prev[l][0] * self.H)
-            dc[l][1] += (self.k1 * c_prev[l][0] * self.H)
+            rate = self.k1 * c_prev[l][0] * self.H
+            dc[l][0] += -rate
+            dc[l][1] += rate
             #2
-            dc[l][1] += (-self.k1 * c_prev[l][1] * self.H)
-            dc[l][2] += (self.k1 * c_prev[l][1] * self.H)
+            rate = self.k1 * c_prev[l][1] * self.H
+            dc[l][1] += -rate
+            dc[l][2] += rate
             #3
-            dc[l][7] += (self.k1 * c_prev[l][8] * self.H)
-            dc[l][8] += (-self.k1 * c_prev[l][8] * self.H)
+            rate = self.k1 * c_prev[l][8] * self.H
+            dc[l][7] += rate
+            dc[l][8] += -rate
     #        for i in range(0, C):
     #            print dc[l][i]
 
             #Deactivacia
             #1
-            dc[l][0] += (self.k2 * c_prev[l][1] * self.H)
-            dc[l][1] += (-self.k2 * c_prev[l][1] * self.H)
+            rate = self.k2 * c_prev[l][1] * self.H
+            dc[l][0] += rate
+            dc[l][1] += -rate
             #2
-            dc[l][1] += (self.k2 * c_prev[l][2] * self.H)
-            dc[l][2] += (-self.k2 * c_prev[l][2] * self.H)
+            rate = self.k2 * c_prev[l][2] * self.H
+            dc[l][1] += rate
+            dc[l][2] += -rate
             #3
-            dc[l][7] += (-self.k2 * c_prev[l][7] * self.H)
-            dc[l][8] += (self.k2 * c_prev[l][7] * self.H)
+            rate = self.k2 * c_prev[l][7] * self.H
+            dc[l][7] += -rate
+            dc[l][8] += rate
     #        for i in range(0, C):
     #            print dc[l][i]
 
             #Obr dimernoi svyazi
             #1
-            dc[l][1] += (-self.k4_1 * c_prev[l][2] * c_prev[l][1])
-            dc[l][2] += (-self.k4_1 * c_prev[l][2] * c_prev[l][1])
-            dc[l][3] += (self.k4_1 * c_prev[l][2] * c_prev[l][1])
-            dc[l][4] += (self.k4_1 * c_prev[l][2] * c_prev[l][1])
+            rate = self.k4_1 * c_prev[l][2] * c_prev[l][1]
+            dc[l][1] += -rate
+            dc[l][2] += -rate
+            dc[l][3] += rate
+            dc[l][4] += rate
             #2
-            dc[l][1] += (-self.k4 * c_prev[l][1] ** 2) *2
-            dc[l][4] += (self.k4 * c_prev[l][1] ** 2) *2
+            rate = self.k4 * (c_prev[l][1] ** 2)
+            dc[l][1] += (-rate) *2
+            dc[l][4] += rate *2
             #3
-            dc[l][2] += (-self.k4 * c_prev[l][2] ** 2) *2
-            dc[l][3] += (self.k4 * c_prev[l][2] ** 2) *2
+            rate = self.k4 * (c_prev[l][2] ** 2)
+            dc[l][2] += (-rate) *2
+            dc[l][3] += rate *2
             #4
-      #      print'""""', c_prev[l+1][0]
-      #      print'""""', c_prev[l][1]
-       #     print'""""', c_prev[l][7]
-       #     print'""""', c_prev[l][8]
-
-            dc[l][1] += (-self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][4] += (self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][5] += (self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][7] += (-self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
+            rate = self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
+            dc[l][1] += -rate
+            dc[l][4] += rate
+            dc[l][5] += rate
+            dc[l][7] += -rate
        #     print'""""', c_prev[l][5]
             #5
-            dc[l][2] += (-self.k4 * c_prev[l][2] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][3] += (self.k4 * c_prev[l][2] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][5] += (self.k4 * c_prev[l][2] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][7] += (-self.k4 * c_prev[l][2] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
+            rate = self.k4 * c_prev[l][2] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
+            dc[l][2] += -rate
+            dc[l][3] += rate
+            dc[l][5] += rate
+            dc[l][7] += -rate
 #            print'""""', c_prev[l][5]
  #           print '___'
             #6
-            dc[l][1] += (-self.k4*c_prev[l][1]*c_prev[l][0])
-            dc[l][0] += (-self.k4*c_prev[l][1]*c_prev[l][0])
-            dc[l][4] += (self.k4*c_prev[l][1]*c_prev[l][0])*2
+            rate = self.k4*c_prev[l][1]*c_prev[l][0]
+            dc[l][1] += -rate
+            dc[l][0] += -rate
+            dc[l][4] += rate *2
 
 
 
@@ -213,85 +221,98 @@ class Diamond:
     #            print dc[l][i]
             #Razriv dimernoi svyazi
             #1
-            dc[l][1] += (self.k5 * c_prev[l][3] * c_prev[l][4])
-            dc[l][2] += (self.k5 * c_prev[l][3] * c_prev[l][4])
-            dc[l][3] += (-self.k5 * c_prev[l][3] * c_prev[l][4])
-            dc[l][4] += (-self.k5 * c_prev[l][3] * c_prev[l][4])
+            rate = self.k5 * c_prev[l][3] * c_prev[l][4]
+            dc[l][1] += rate
+            dc[l][2] += rate
+            dc[l][3] += -rate
+            dc[l][4] += -rate
             #2
-            dc[l][1] += (self.k5 * c_prev[l][4] ** 2)*2
-            dc[l][4] += (-self.k5 * c_prev[l][4] ** 2)*2
+            rate = self.k5 * (c_prev[l][4] ** 2)
+            dc[l][1] += rate *2
+            dc[l][4] += -rate *2
             #3
-            dc[l][2] += (self.k5 * c_prev[l][3] ** 2)*2
-            dc[l][3] += (-self.k5 * c_prev[l][3] ** 2)*2
+            rate = self.k5 * (c_prev[l][3] ** 2)
+            dc[l][2] += rate * 2
+            dc[l][3] += -rate * 2
             #4
-            dc[l][1] += (self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][4] += (-self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][5] += (-self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][7] += (self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
+            rate = self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8]
+            dc[l][1] += rate
+            dc[l][4] += -rate
+            dc[l][5] += -rate
+            dc[l][7] += rate
             #5
-            dc[l][2] += (self.k5 * c_prev[l][3] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][3] += (-self.k5 * c_prev[l][3] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][5] += (-self.k5 * c_prev[l][3] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][7] += (self.k5 * c_prev[l][3] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8])
+            rate = self.k5 * c_prev[l][3] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8]
+            dc[l][2] += rate
+            dc[l][3] += -rate
+            dc[l][5] += -rate
+            dc[l][7] += rate
             #6
-            dc[l][4] += (-self.k5 * (c_prev[l][4]) ** 2)*2
-            dc[l][0] += (self.k5 * (c_prev[l][4] ** 2))
-            dc[l][1] += (self.k5 * (c_prev[l][4] ** 2))
+            rate = self.k5 * (c_prev[l][4] ** 2)
+            dc[l][4] += (-rate)*2
+            dc[l][0] += rate
+            dc[l][1] += rate
    #        for i in range(0, C):
      #           print dc[l][i]
 
             #Osagdenie metil-radikala
             #1
-            dc[l+1][0] += (self.k6 * c_prev[l][4] * c_prev[l][3] * self.CH3)
-            dc[l][3] += (-self.k6 * c_prev[l][4] * c_prev[l][3] * self.CH3)
-            dc[l][4] += (-self.k6 * c_prev[l][4] * c_prev[l][3] * self.CH3)
-            dc[l][8] += (self.k6 * c_prev[l][4] * c_prev[l][3] * self.CH3)*2
+            rate = self.k6 * c_prev[l][4] * c_prev[l][3] * self.CH3
+            dc[l+1][0] += rate
+            dc[l][3] += -rate
+            dc[l][4] += -rate
+            dc[l][8] += rate * 2
             #2
-            dc[l+1][0] += (self.k6 * (c_prev[l][3] ** 2) * self.CH3)
-            dc[l][3] += (-self.k6 * (c_prev[l][3] ** 2) * self.CH3)*2
-            dc[l][7] += (self.k6 * (c_prev[l][3] ** 2) * self.CH3)
-            dc[l][8] += (self.k6 * (c_prev[l][3] ** 2) * self.CH3)
+            rate = self.k6 * (c_prev[l][3] ** 2) * self.CH3
+            dc[l+1][0] += rate
+            dc[l][3] += -rate*2
+            dc[l][7] += rate
+            dc[l][8] += rate
             #3
-            dc[l+1][0] += (self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3)
-            dc[l][3] += (-self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3)
-            dc[l][5] += (-self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3)
-            dc[l][6] += (self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3)
-            dc[l][8] += (self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3)
+            rate = self.k6 * c_prev[l][5] * c_prev[l][3] * self.CH3
+            dc[l+1][0] += rate
+            dc[l][3] += -rate
+            dc[l][5] += -rate
+            dc[l][6] += rate
+            dc[l][8] += rate
 
      #       for i in range(0, C):
      #           print dc[l][i]
             #Migracia mostovoi gruppi
             #1
-            dc[l][6] += (self.k7 * (c_prev[l][7]**2)* c_prev[l][8]) + (-self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1])
-            dc[l][7] += (-self.k7 * (c_prev[l][7]**2)* c_prev[l][8]) + (self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1])
-            dc[l][8] += (-self.k7 * (c_prev[l][7]**2)* c_prev[l][8]) + (self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1])
+            rate1 = self.k7 * (c_prev[l][7]**2)* c_prev[l][8]
+            rate2 = self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1]
+            dc[l][6] += rate1 + (-rate2)
+            dc[l][7] += -rate1 + rate2
+            dc[l][8] += -rate1 + rate2
             #2
-            dc[l][2] += (self.k7*(c_prev[l][7]**3)) + (-self.k7*c_prev[l][6]*c_prev[l][7]*c_prev[l][2])
-            dc[l][6] += (self.k7 * c_prev[l][7]**3) + (-self.k7*c_prev[l][6]*c_prev[l][7]*c_prev[l][2])
-            dc[l][7] += (-self.k7 * c_prev[l][7]**3)*2 + (self.k7*c_prev[l][6]*c_prev[l][7]*c_prev[l][2])*2
+            rate1 = self.k7*c_prev[l][7]**3
+            rate2 = self.k7*c_prev[l][6]*c_prev[l][7]*c_prev[l][2]
+            dc[l][2] += rate1 + (-rate2)
+            dc[l][6] += rate1 + (-rate2)
+            dc[l][7] += (-rate1 + rate2)*2
 
      #       for i in range(0, C):
      #           print dc[l][i]
             #Travlenie
             #1
-            dc[l+1][0] += (-self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0])
-            dc[l][4] += (self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0])*2
-            dc[l][8] += (-self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0])*2
+            rate = self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0]
+            dc[l+1][0] += -rate
+            dc[l][4] += rate *2
+            dc[l][8] += -rate *2
             #2
-            dc[l+1][0] += (-self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][3] += (self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][4] += (self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][7] += (-self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
-            dc[l][8] += (-self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8])
+            rate = self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
+            dc[l+1][0] += -rate
+            dc[l][3] += rate
+            dc[l][4] += rate
+            dc[l][7] += -rate
+            dc[l][8] += -rate
             #3
-            dc[l+1][0] += (-self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
-            dc[l][6] += (-self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
-            dc[l][8] += (-self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
-            dc[l][3] += (self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
-            dc[l][5] += (self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8])
-     #       for i in range(0, C):
-     #           print dc[l][i]
-
+            rate = self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8]
+            dc[l+1][0] += -rate
+            dc[l][6] += -rate
+            dc[l][8] += -rate
+            dc[l][3] += rate
+            dc[l][5] += rate
 
             for a, b, c in vars_12_78_78:
                 rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
