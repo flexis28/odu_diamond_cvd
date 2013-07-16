@@ -9,7 +9,7 @@ class Diamond:
     H = 1e-9
     CH3 = 1e-10
     dt =   0.01
-    maxt = 100.0
+    maxt = 100.01
 
     #Gleb Fake
     #T = 1200
@@ -47,28 +47,32 @@ class Diamond:
     # k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
 
     cc = []
-    dc0 = []
     def __init__(self):
         for i in range(self.L):
-            self.cc.append([0]* self.C)
-            self.dc0.append([0]* self.C)
+            self.cc.append([0] * self.C)
 
         self.cc[0][0] = 1
 
     def main_loop(self):
-        vivod = 99
+        vivod = 100
         for x in range(0, int(self.maxt / self.dt)):
             self.cc = self.RUN(self.cc)
 
             if (x%vivod == 0):
+                toel = [0] * self.C
                 print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
                 for l in range(0, self.L-1):
                     print l+1, 'SLOI ->',
                     v = 0
                     for j in range(0, self.C):
+                        toel[j] += self.cc[l][j]
                         v += self.cc[l][j]
                         print "%i:%1.4e " % (j, self.cc[l][j]),
                     print "C = %1.2e" % v
+
+                print ' TOTAL ->',
+                for j in range(0, self.C):
+                    print "%i:%1.4e " % (j, toel[j]),
 
      #       if (x%vivod == 0):
      #           print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
@@ -81,22 +85,11 @@ class Diamond:
      #               print "C =", v
 
     def RUN(self, c_prev):
-        R, K1, K2, K3, K4 = [], [], [], [], []
-        for j in range(0, self.L-1):
-            R.append([0]*self.C)
-            K1.append([0]*self.C)
-            K2.append([0]*self.C)
-            K3.append([0]*self.C)
-            K4.append([0]*self.C)
-
         K1 = self.MUL(self.model(c_prev), self.dt)
         K2 = self.MUL(self.model(self.SUM(c_prev, self.DEL(K1, 2))), self.dt)
         K3 = self.MUL(self.model(self.SUM(c_prev, self.DEL(K2, 2))), self.dt)
         K4 = self.MUL(self.model(self.SUM(c_prev, K3)), self.dt)
-       # print dc[0][0]
-        R = self.SUM(c_prev, self.DEL(self.SUM(self.SUM(K1, self.MUL(K2, 2)), self.SUM(self.MUL(K3, 2), K4)), 6))
-
-        return R
+        return self.SUM(c_prev, self.DEL(self.SUM(self.SUM(K1, self.MUL(K2, 2)), self.SUM(self.MUL(K3, 2), K4)), 6))
 
     def MUL(self, mass, m):
         for l in range(0, self.L - 1):
