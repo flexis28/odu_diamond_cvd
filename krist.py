@@ -190,9 +190,6 @@ class Diamond:
             dc[l][1] += -rate
             dc[l][0] += -rate
             dc[l][4] += rate *2
-            #6
-      #      dc[l][5] += (self.k4 * (c_prev[l][8] * c_prev[l+1][0] * c_prev[l][7]) ** 2)
-      #      dc[l][7] += (-self.k4 * (c_prev[l][8] * c_prev[l+1][0] * c_prev[l][7]) ** 2)*2
 
             #Razriv dimernoi svyazi
             #1
@@ -208,7 +205,7 @@ class Diamond:
             #3
             rate = self.k5 * (c_prev[l][3] ** 2)
             dc[l][2] += rate * 2
-            dc[l][3] += -rate * 2
+            dc[l][3] += (-rate) * 2
             #4
             for a in [4, 3]:
                 rate = self.k5 * c_prev[l][a] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8]
@@ -264,13 +261,13 @@ class Diamond:
             #1
             rate = self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0]
             dc[l+1][0] += -rate
-            dc[l][4] += rate *2
+            dc[l][4] += rate
+            dc[l][3] += rate
             dc[l][8] += -rate *2
             #2
             rate = self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
             dc[l+1][0] += -rate
-            dc[l][3] += rate
-            dc[l][4] += rate
+            dc[l][3] += rate * 2
             dc[l][7] += -rate
             dc[l][8] += -rate
             #3
@@ -281,6 +278,7 @@ class Diamond:
             dc[l][3] += rate
             dc[l][5] += rate
 
+            #Migracia вниз
             for a, b, c in vars_12_78_78:
                 rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
                 dc[l+1][a] += -rate
