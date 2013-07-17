@@ -157,8 +157,6 @@ class Diamond:
             rate = self.k1 * c_prev[l][8] * self.H
             dc[l][7] += rate
             dc[l][8] += -rate
-    #        for i in range(0, C):
-    #            print dc[l][i]
 
             #Deactivacia
             #1
@@ -173,8 +171,6 @@ class Diamond:
             rate = self.k2 * c_prev[l][7] * self.H
             dc[l][7] += -rate
             dc[l][8] += rate
-    #        for i in range(0, C):
-    #            print dc[l][i]
 
             #Obr dimernoi svyazi
             #1
@@ -185,11 +181,11 @@ class Diamond:
             dc[l][4] += rate
             #2
             rate = self.k4 * (c_prev[l][1] ** 2)
-            dc[l][1] += (-rate) *2
+            dc[l][1] += -rate *2
             dc[l][4] += rate *2
             #3
             rate = self.k4 * (c_prev[l][2] ** 2)
-            dc[l][2] += (-rate) *2
+            dc[l][2] += -rate *2
             dc[l][3] += rate *2
             #4
             rate = self.k4 * c_prev[l][1] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
@@ -211,14 +207,12 @@ class Diamond:
             dc[l][1] += -rate
             dc[l][0] += -rate
             dc[l][4] += rate *2
-
-
-
-            #6
+            #7
       #      dc[l][5] += (self.k4 * (c_prev[l][8] * c_prev[l+1][0] * c_prev[l][7]) ** 2)
       #      dc[l][7] += (-self.k4 * (c_prev[l][8] * c_prev[l+1][0] * c_prev[l][7]) ** 2)*2
     #        for i in range(0, C):
     #            print dc[l][i]
+
             #Razriv dimernoi svyazi
             #1
             rate = self.k5 * c_prev[l][3] * c_prev[l][4]
@@ -228,12 +222,12 @@ class Diamond:
             dc[l][4] += -rate
             #2
             rate = self.k5 * (c_prev[l][4] ** 2)
-            dc[l][1] += rate *2
-            dc[l][4] += -rate *2
+            dc[l][1] += rate * 2
+            dc[l][4] += -rate * 2
             #3
             rate = self.k5 * (c_prev[l][3] ** 2)
             dc[l][2] += rate * 2
-            dc[l][3] += -rate * 2
+            dc[l][3] += (-rate) * 2
             #4
             rate = self.k5 * c_prev[l][4] * c_prev[l][5] * c_prev[l+1][0] * c_prev[l][8]
             dc[l][1] += rate
@@ -248,7 +242,7 @@ class Diamond:
             dc[l][7] += rate
             #6
             rate = self.k5 * (c_prev[l][4] ** 2)
-            dc[l][4] += (-rate)*2
+            dc[l][4] += -rate * 2
             dc[l][0] += rate
             dc[l][1] += rate
    #        for i in range(0, C):
@@ -264,7 +258,7 @@ class Diamond:
             #2
             rate = self.k6 * (c_prev[l][3] ** 2) * self.CH3
             dc[l+1][0] += rate
-            dc[l][3] += -rate*2
+            dc[l][3] += -rate * 2
             dc[l][7] += rate
             dc[l][8] += rate
             #3
@@ -285,8 +279,8 @@ class Diamond:
             dc[l][7] += -rate1 + rate2
             dc[l][8] += -rate1 + rate2
             #2
-            rate1 = self.k7*c_prev[l][7]**3
-            rate2 = self.k7*c_prev[l][6]*c_prev[l][7]*c_prev[l][2]
+            rate1 = self.k7 * c_prev[l][7]**3
+            rate2 = self.k7 * c_prev[l][6]*c_prev[l][7]*c_prev[l][2]
             dc[l][2] += rate1 + (-rate2)
             dc[l][6] += rate1 + (-rate2)
             dc[l][7] += (-rate1 + rate2)*2
@@ -297,13 +291,13 @@ class Diamond:
             #1
             rate = self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0]
             dc[l+1][0] += -rate
-            dc[l][4] += rate *2
+            dc[l][4] += rate
+            dc[l][3] += rate
             dc[l][8] += -rate *2
             #2
             rate = self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
             dc[l+1][0] += -rate
-            dc[l][3] += rate
-            dc[l][4] += rate
+            dc[l][3] += rate * 2
             dc[l][7] += -rate
             dc[l][8] += -rate
             #3
@@ -314,6 +308,7 @@ class Diamond:
             dc[l][3] += rate
             dc[l][5] += rate
 
+            #Migracia вниз
             for a, b, c in vars_12_78_78:
                 rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
                 dc[l+1][a] += -rate
