@@ -24,17 +24,17 @@ class Diamond:
     #k9 = 6.13e4 * math.exp(-36.17262/(1.98*T))
 
     #OUR Fake #2
-    T = 1200
-    k1 = 2.5e5 # активация
-    k2 = 1e5 # дезактивация
-    k4 = 1e1 # обр. димерной связи
-    k4_1 = k4 * 10 # обр. димерной связи (быстрая)
-    k4_2 = k4 * 0.1 # обр. димерной связи (медленная)
-    k5 = 1 # разрыв димерной связи
-    k6 = 1e4 # осаждение метил-радикала
-    k7 = 1e13 # миграция мостовой группы
-    k8 = 0.5 # травление
-    k9 = 1e21 # миграция вниз
+    # T = 1200
+    # k1 = 2.5e5 # активация
+    # k2 = 1e5 # дезактивация
+    # k4 = 1e1 # обр. димерной связи
+    # k4_1 = k4 * 10 # обр. димерной связи (быстрая)
+    # k4_2 = k4 * 0.1 # обр. димерной связи (медленная)
+    # k5 = 1 # разрыв димерной связи
+    # k6 = 1e4 # осаждение метил-радикала
+    # k7 = 1e13 # миграция мостовой группы
+    # k8 = 0.5 # травление
+    # k9 = 1e17 # миграция вниз
 
 # 0 ->  CH2
 # 1 ->  *CH
@@ -47,16 +47,18 @@ class Diamond:
 # 8 ->  \CH
 
     #OUR Fake
-    # T = 1200
-    # k1 = 5.66e15 * math.exp(-3360/T)*H
-    # k2 = 2e13*H
-    # k4 = 1e1
-    # k4_1 = 20e2
-    # k5 = 0.01#4.79e13 * math.exp(-7196.8/T)
-    # k6 = 1e23*CH3#1e13*CH3
-    # k7 = 6.13e12*math.exp(-18.269/T)
-    # k8 = 0.5
+    T = 1200
+    k1 = 5.66e15 * math.exp(-3360/T) * H
+    k2 = 2e13 * H
+    k4 = 1e1
+    k4_1 = 20e2
+    k4_2 = 5
+    k5 = 0.01 #4.79e13 * math.exp(-7196.8/T)
+    k6 = 1e23 * CH3 #1e13*CH3
+    k7 = 6.13e12 * math.exp(-18.269/T)
+    k8 = 0.5
     # k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
+    k9 = 0
 
     #ORIGINAL
     # k1 = 5.2e13 * H * math.exp(-3360/T)
@@ -308,32 +310,34 @@ class Diamond:
             dc[l][8] += -rate
 
             #Migracia вниз
-            for a, b, c in vars_12_78_78:
-                rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][2]**2) * self.CH3
+            for a in [1, 2]:
+                rate = self.k9 * c_prev[l+1][a] * (c_prev[l][2]**2) * self.CH3
                 dc[l+1][a] += -rate
-                dc[l+1][4] += rate * 2
+                if a == 1:
+                    dc[l+1][4] += rate * 2
+                else:
+                    dc[l+1][3] += rate
+                    dc[l+1][4] += rate
                 dc[l][2] += -rate * 2
                 dc[l][8] += rate * 2
 
-            for a in [7, 8]:
-                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * (c_prev[l][7]**3) * self.CH3
-                dc[l+1][2] += -rate
-                dc[l][7] += -rate * 3
-                dc[l+1][4] += rate * 2
-                dc[l][6] += rate * 2
-                dc[l][8] += rate
+            rate = self.k9 * c_prev[l+1][2] * (c_prev[l][7]**3) * self.CH3
+            dc[l+1][2] += -rate
+            dc[l+1][4] += rate * 2
+            dc[l][6] += rate * 2
+            dc[l][7] += -rate * 3
+            dc[l][8] += rate
 
-            for a, b in vars_78_78:
-                rate = self.k9 * c_prev[l+1][2] * c_prev[l][a] * c_prev[l][b] * c_prev[l][5] * c_prev[l][3] * self.CH3
-                dc[l+1][2] += -rate
-                dc[l][5] += -rate
-                dc[l][3] += -rate
-                dc[l+1][4] += rate * 2
-                dc[l][6] += rate
-                dc[l][8] += rate
+            rate = self.k9 * c_prev[l+1][2] * c_prev[l][5] * c_prev[l][3] * self.CH3
+            dc[l+1][2] += -rate
+            dc[l+1][4] += rate * 2
+            dc[l][3] += -rate
+            dc[l][5] += -rate
+            dc[l][6] += rate
+            dc[l][8] += rate
 
-            for a, b, c in vars_12_78_78:
-                rate = self.k9 * c_prev[l+1][a] * c_prev[l][b] * c_prev[l][c] * (c_prev[l][3]**2) * self.CH3
+            for a in [1, 2]:
+                rate = self.k9 * c_prev[l+1][a] * (c_prev[l][3]**2) * self.CH3
                 dc[l+1][a] += -rate
                 dc[l][3] += -rate * 2
                 if a == 1:
@@ -341,11 +345,7 @@ class Diamond:
                 else:
                     dc[l+1][3] += rate
                     dc[l+1][4] += rate
-                if c == 7:
-                    dc[l][8] += rate * 3
-                else:
-                    dc[l][8] += rate * 2
-                    dc[l][7] += rate
+                dc[l][8] += rate * 2
 
         return dc
 
