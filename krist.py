@@ -4,12 +4,12 @@ import math
 import itertools
 class Diamond:
     C = 9
-    L = 8
+    L = 5
 
     H = 1e-9
     CH3 = 1e-10
     dt =   0.01
-    maxt = 100.01
+    maxt = 50.01
 
     #Gleb Fake
     #T = 1200
@@ -23,17 +23,40 @@ class Diamond:
     #k8 = 0
     #k9 = 6.13e4 * math.exp(-36.17262/(1.98*T))
 
-    #OUR Fake
+    #OUR Fake #2
     T = 1200
-    k1 = 5.66e15 * math.exp(-3360/T)*H
-    k2 = 2e13*H
-    k4 = 1e1
-    k4_1 = 20e2
-    k5 = 0.01#4.79e13 * math.exp(-7196.8/T)
-    k6 = 1e23*CH3#1e13*CH3
-    k7 = 6.13e12*math.exp(-18.269/T)
-    k8 = 0.5
-    k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
+    k1 = 2.5e5 # активация
+    k2 = 1e5 # дезактивация
+    k4 = 1e1 # обр. димерной связи
+    k4_1 = k4 * 10 # обр. димерной связи (быстрая)
+    k4_2 = k4 * 0.1 # обр. димерной связи (медленная)
+    k5 = 1 # разрыв димерной связи
+    k6 = 1e4 # осаждение метил-радикала
+    k7 = 1e13 # миграция мостовой группы
+    k8 = 0.5 # травление
+    k9 = 1e21 # миграция вниз
+
+# 0 ->  CH2
+# 1 ->  *CH
+# 2 ->  **C
+# 3 ->  *C-
+# 4 ->  -CH
+# 5 ->  -C/
+# 6 ->  \C/
+# 7 ->  *C/
+# 8 ->  \CH
+
+    #OUR Fake
+    # T = 1200
+    # k1 = 5.66e15 * math.exp(-3360/T)*H
+    # k2 = 2e13*H
+    # k4 = 1e1
+    # k4_1 = 20e2
+    # k5 = 0.01#4.79e13 * math.exp(-7196.8/T)
+    # k6 = 1e23*CH3#1e13*CH3
+    # k7 = 6.13e12*math.exp(-18.269/T)
+    # k8 = 0.5
+    # k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
 
     #ORIGINAL
     # k1 = 5.2e13 * H * math.exp(-3360/T)
@@ -132,6 +155,16 @@ class Diamond:
 
         for l in range(0, self.L-1):
 
+    # 0 ->  CH2
+    # 1 ->  *CH
+    # 2 ->  **C
+    # 3 ->  *C-
+    # 4 ->  -CH
+    # 5 ->  -C/
+    # 6 ->  \C/
+    # 7 ->  *C/
+    # 8 ->  \CH
+
             #Activacia
             #1
             rate = self.k1 * c_prev[l][0] * self.H
@@ -172,12 +205,12 @@ class Diamond:
             dc[l][1] += -rate * 2
             dc[l][4] += rate * 2
             #3
-            rate = self.k4 * (c_prev[l][2] ** 2)
+            rate = self.k4_1 * (c_prev[l][2] ** 2)
             dc[l][2] += -rate * 2
             dc[l][3] += rate *2
             #4
             for a in [1, 2]:
-                rate = self.k4 * c_prev[l][a] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
+                rate = self.k4_2 * c_prev[l][a] * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
                 dc[l][a] += -rate
                 if a == 1:
                     dc[l][4] += rate
@@ -216,11 +249,6 @@ class Diamond:
                 dc[l][a] += -rate
                 dc[l][5] += -rate
                 dc[l][7] += rate
-            #6
-            rate = self.k5 * (c_prev[l][4] ** 2)
-            dc[l][4] += -rate * 2
-            dc[l][0] += rate
-            dc[l][1] += rate
 
             #Osagdenie metil-radikala
             #1
@@ -244,39 +272,40 @@ class Diamond:
             dc[l][8] += rate
 
             #Migracia mostovoi gruppi
-            #1
-            rate1 = self.k7 * (c_prev[l][7]**2) * c_prev[l][8]
-            rate2 = self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1]
-            dc[l][6] += rate1 + (-rate2)
-            dc[l][7] += -rate1 + rate2
-            dc[l][8] += -rate1 + rate2
-            #2
-            rate1 = self.k7 * c_prev[l][7]**3
-            rate2 = self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][2]
-            dc[l][2] += rate1 + (-rate2)
-            dc[l][6] += rate1 + (-rate2)
-            dc[l][7] += (-rate1 + rate2) * 2
+            for a in [0, 1, 2]:
+                #1
+                rate1 = self.k7 * (c_prev[l][7]**2) * c_prev[l][8] * c_prev[l+1][a]
+                rate2 = self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1] * c_prev[l+1][a]
+                dc[l][6] += rate1 + (-rate2)
+                dc[l][7] += -rate1 + rate2
+                dc[l][8] += -rate1 + rate2
+                #2
+                rate1 = self.k7 * (c_prev[l][7]**3) * c_prev[l+1][a]
+                rate2 = self.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][2] * c_prev[l+1][a]
+                dc[l][2] += rate1 + (-rate2)
+                dc[l][6] += rate1 + (-rate2)
+                dc[l][7] += (-rate1 + rate2) * 2
 
             #Travlenie
             #1
             rate = self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0]
             dc[l+1][0] += -rate
-            dc[l][4] += rate
             dc[l][3] += rate
-            dc[l][8] += -rate *2
+            dc[l][4] += rate
+            dc[l][8] += -rate * 2
             #2
-            rate = self.k8 * c_prev[l][7] * c_prev[l+1][0] * c_prev[l][8]
+            rate = self.k8 * c_prev[l][7] * c_prev[l][8] * c_prev[l+1][0]
             dc[l+1][0] += -rate
             dc[l][3] += rate * 2
             dc[l][7] += -rate
             dc[l][8] += -rate
             #3
-            rate = self.k8 * c_prev[l][6]* c_prev[l+1][0] * c_prev[l][8]
+            rate = self.k8 * c_prev[l][6] * c_prev[l][8] * c_prev[l+1][0]
             dc[l+1][0] += -rate
-            dc[l][6] += -rate
-            dc[l][8] += -rate
             dc[l][3] += rate
             dc[l][5] += rate
+            dc[l][6] += -rate
+            dc[l][8] += -rate
 
             #Migracia вниз
             for a, b, c in vars_12_78_78:
