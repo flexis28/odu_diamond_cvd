@@ -57,8 +57,8 @@ class Diamond:
     k6 = 1e23 * CH3 #1e13*CH3
     k7 = 6.13e12 * math.exp(-18.269/T)
     k8 = 0.5
-    # k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
-    k9 = 0
+    k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
+    # k9 = 0
 
     #ORIGINAL
     # k1 = 5.2e13 * H * math.exp(-3360/T)
@@ -125,25 +125,6 @@ class Diamond:
                 d[l][i] = d[l][i] / e
         return d
 
-    def variants(self, *ranges, **kwargs):
-        acc = kwargs.pop('acc', [])
-
-        if not acc:
-            self.vars = []
-
-        if not ranges:
-            self.vars.append(acc)
-        else:
-            ranges = list(ranges)
-            current_range = list(ranges.pop())
-            for i in current_range:
-                self.variants(*ranges, acc = acc + [i])
-
-        if not acc:
-            # TODO: необходимо сохранять порядок элементов таким же, в каком порядке передаём в функцию!!
-            map(lambda result: result.sort(), self.vars)
-            return [list(x) for x in set(tuple(x) for x in self.vars)]
-
     def model(self, c_prev):
         dc = []
         for i in range(self.L):
@@ -151,9 +132,6 @@ class Diamond:
         for l in range(0, self.L-1):
             for a in range(0, self.C):
                 dc[l][a] = 0
-
-        vars_12_78_78 = self.variants([1, 2], [7, 8], [7, 8])
-        vars_78_78 = self.variants([7, 8], [7, 8])
 
         for l in range(0, self.L-1):
 
@@ -309,6 +287,8 @@ class Diamond:
             dc[l][6] += -rate
             dc[l][8] += -rate
 
+            # TODO: миграция вниз не учитывает атомов входящих в структуры, которые изменяются посредством миграции
+            # последнее упоминание по циклах перебора см. в коммите f88c420dd1f425442494aade8a019c295c0208b4
             #Migracia вниз
             for a in [1, 2]:
                 rate = self.k9 * c_prev[l+1][a] * (c_prev[l][2]**2) * self.CH3
