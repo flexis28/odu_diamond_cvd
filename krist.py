@@ -4,11 +4,11 @@ import math
 import itertools
 class Diamond:
     C = 9
-    L = 5
+    L = 7
 
     H = 1e-9
     CH3 = 1e-10
-    dt =   0.01
+    dt = 0.01
     maxt = 50.01
 
     #Gleb Fake
@@ -58,7 +58,6 @@ class Diamond:
     k7 = 6.13e12 * math.exp(-18.269/T)
     k8 = 0.5
     k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
-    # k9 = 0
 
     #ORIGINAL
     # k1 = 5.2e13 * H * math.exp(-3360/T)
@@ -80,25 +79,43 @@ class Diamond:
 
     def main_loop(self):
         vivod = 100
+        f = open("c:/C-Krist.dat","w")
         for x in range(0, int(self.maxt / self.dt)):
             self.cc = self.RUN(self.cc)
 
             if (x%vivod == 0):
                 toel = [0] * self.C
-                print'__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
+                print'\n__________________________________', x+1, 'SHAG,',(x+1)*self.dt,'sec__________________________________'
+                f.write("#_______________________________")
+                f.write(str(x+1))
+                f.write(" SHAG, ")
+                f.write(str((x+1)*self.dt))
+                f.write(" sec_______________________________\n")
                 for l in range(0, self.L-1):
-                    print l+1, 'SLOI ->',
+                    print l+1, 'SLOI->',
                     v = 0
+                    f.write('# ')
+                    f.write(str(l))
+                    f.write(' Sloi->\t')
                     for j in range(0, self.C):
                         toel[j] += self.cc[l][j]
                         v += self.cc[l][j]
                         print "%i:%1.4e " % (j, self.cc[l][j]),
-                    print "C = %1.2e" % v
 
+                        f.write(str("%1.4e " % (self.cc[l][j])))
+                        f.write(" ")
+                    f.write("\n")
+                    print "C = %1.2e" % v
                 print ' TOTAL ->',
+                f.write("TOTAL-> ")
+                f.write(str((x+1)*self.dt))
+                f.write('\t')
                 for j in range(0, self.C):
                     print "%i:%1.4e " % (j, toel[j]),
+                    f.write(str("%1.4e  " % (toel[j])))
                 print
+                f.write('\n')
+        f.close()
 
     def RUN(self, c_prev):
         K1 = self.MUL(self.model(c_prev), self.dt)

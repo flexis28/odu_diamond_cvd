@@ -1,0 +1,17 @@
+#Как только программа создаст файл 'c:/C-Krist.dat' Скопировать в терминал gnuplot следующие строки
+
+
+set term windows
+set logscale
+set title 'Modeling grow'
+set ylabel 'C'
+set xlabel 't'
+plot 'c:/C-Krist.dat' using 2:3 title 'HCH',\
+'c:/C-Krist.dat' using 2:4 title '*CH',\
+'c:/C-Krist.dat' using 2:5 title '*C*',\
+'c:/C-Krist.dat' using 2:6 title '*C-',\
+'c:/C-Krist.dat' using 2:7 title '-CH',\
+'c:/C-Krist.dat' using 2:8 title '-C/',\
+'c:/C-Krist.dat' using 2:9 title '\C/',\
+'c:/C-Krist.dat' using 2:10 title '*C/',\
+'c:/C-Krist.dat' using 2:11 title '\CH'
