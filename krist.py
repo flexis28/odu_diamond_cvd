@@ -1,9 +1,7 @@
 # encoding: utf-8
 
 import math
-
-import Gnuplot
-import itertools
+import plot as p
 class Diamond:
     C = 9
     L = 7
@@ -11,7 +9,7 @@ class Diamond:
     H = 1e-9
     CH3 = 1e-10
     dt = 0.01
-    maxt = 400.01
+    maxt = 100.01
 
     #Gleb Fake
     #T = 1200
@@ -51,15 +49,15 @@ class Diamond:
     #OUR Fake
     T = 1200
     k1 = 5.66e15 * math.exp(-3360/T) * H
-    k2 = 2e13 * H
+    k2 = 0#2e13 * H
     k4 = 1e1
     k4_1 = 20e2
     k4_2 = 5
-    k5 = 0.01 #4.79e13 * math.exp(-7196.8/T)
-    k6 = 1e23 * CH3 #1e13*CH3
-    k7 = 6.13e12 * math.exp(-18.269/T)
-    k8 = 0.5
-    k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
+    k5 = 0#0.01
+    k6 = 1e13 * CH3 #1e13*CH3
+    k7 = 6.13e12 * math.exp(-18269/T)
+    k8 = 0#0.5
+    k9 = 3.5e20 * math.exp(-31300/(1.98*T))
 
     #ORIGINAL
  #   k1 = 5.2e13 * H * math.exp(-3360/T)
@@ -79,6 +77,7 @@ class Diamond:
 
         self.cc[0][0] = 1
 
+    plot = p.Plot()
     def main_loop(self):
         vivod = 100
         f = open("c:/C-Krist.dat","w")
@@ -117,7 +116,11 @@ class Diamond:
                     f.write(str("%1.4e  " % (toel[j])))
                 print
                 f.write('\n')
+                self.plot.addtotal(toel, (x+1)*self.dt)
         f.close()
+
+    def GRAF(self):
+        self.plot.draw()
 
     def RUN(self, c_prev):
         K1 = self.MUL(self.model(c_prev), self.dt)
@@ -348,3 +351,4 @@ class Diamond:
 
 d = Diamond()
 d.main_loop()
+d.GRAF()
