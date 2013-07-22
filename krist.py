@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 import math
+
+import Gnuplot
 import itertools
 class Diamond:
     C = 9
@@ -9,7 +11,7 @@ class Diamond:
     H = 1e-9
     CH3 = 1e-10
     dt = 0.01
-    maxt = 50.01
+    maxt = 400.01
 
     #Gleb Fake
     #T = 1200
@@ -60,15 +62,15 @@ class Diamond:
     k9 = 3.5e21 * math.exp(-31.3/(1.98*T))
 
     #ORIGINAL
-    # k1 = 5.2e13 * H * math.exp(-3360/T)
-    # k2 = 2e13 * H
-    # k4 = 1e12 * math.exp(-352.3/T)
-    # k4_1 = k4 * 10
-    # k5 = 4.79e13 * math.exp(-7196.8/T)
-    # k6 = 1e13 * CH3
-    # k7 = 6.13e13 * math.exp(-18.269/T)
-    # k8 = 0.5
-    # k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
+ #   k1 = 5.2e13 * H * math.exp(-3360/T)
+ #   k2 = 2e13 * H
+ #   k4 = 1e12 * math.exp(-352.3/T)
+ #   k4_1 = k4 * 10
+ #   k5 = 4.79e13 * math.exp(-7196.8/T)
+ #   k6 = 1e13 * CH3
+ #   k7 = 6.13e13 * math.exp(-18.269/T)
+ #   k8 = 0.5
+ #   k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
 
     cc = []
     def __init__(self):
@@ -215,11 +217,6 @@ class Diamond:
                     dc[l][3] += rate
                 dc[l][5] += rate
                 dc[l][7] += -rate
-            #6
-            rate = self.k4 * c_prev[l][1]*c_prev[l][0]
-            dc[l][1] += -rate
-            dc[l][0] += -rate
-            dc[l][4] += rate *2
 
             #Razriv dimernoi svyazi
             #1
@@ -285,6 +282,7 @@ class Diamond:
 
             #Travlenie
             #1
+
             rate = self.k8 * (c_prev[l][8]**2) * c_prev[l+1][0]
             dc[l+1][0] += -rate
             dc[l][3] += rate
@@ -304,9 +302,11 @@ class Diamond:
             dc[l][6] += -rate
             dc[l][8] += -rate
 
+
             # TODO: миграция вниз не учитывает атомов входящих в структуры, которые изменяются посредством миграции
             # последнее упоминание по циклах перебора см. в коммите f88c420dd1f425442494aade8a019c295c0208b4
             #Migracia вниз
+
             for a in [1, 2]:
                 rate = self.k9 * c_prev[l+1][a] * (c_prev[l][2]**2) * self.CH3
                 dc[l+1][a] += -rate
