@@ -1,5 +1,5 @@
 .idea/
 *.png
 
-d/genetic/genetic_algorithm
+d/genetic/ga*
 *.o

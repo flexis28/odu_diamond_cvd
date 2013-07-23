@@ -1,8 +1,6 @@
 import std.stdio;
 import std.algorithm;
 import std.array;
-import std.conv;
-import std.math;
 import std.random;
 import std.range;
 

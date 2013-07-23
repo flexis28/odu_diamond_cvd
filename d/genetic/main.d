@@ -1,5 +1,4 @@
 import std.stdio;
-import std.random;
 import genetic_algorithm, population;
 
 pure float f(float x) {
