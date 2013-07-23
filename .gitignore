@@ -1,2 +1,5 @@
 .idea/
 *.png
+
+d/genetic/genetic_algorithm
+*.o
