@@ -4,12 +4,12 @@ import math
 import plot as p
 class Diamond:
     C = 9
-    L = 7
+    L = 4
 
     H = 1e-9
     CH3 = 1e-10
     dt = 0.01
-    maxt = 100.01
+    maxt = 10.01
 
     #Gleb Fake
     #T = 1200
@@ -47,7 +47,7 @@ class Diamond:
 # 8 ->  \CH
 
     #OUR Fake
-    T = 1200
+    T = 1200.0
     k1 = 5.66e15 * math.exp(-3360/T) * H
     k2 = 0#2e13 * H
     k4 = 1e1
@@ -92,7 +92,7 @@ class Diamond:
                 f.write(" SHAG, ")
                 f.write(str((x+1)*self.dt))
                 f.write(" sec_______________________________\n")
-                for l in range(0, self.L-1):
+                for l in range(0, self.L):
                     print l+1, 'SLOI->',
                     v = 0
                     f.write('# ')
@@ -129,31 +129,35 @@ class Diamond:
         K4 = self.MUL(self.model(self.SUM(c_prev, K3)), self.dt)
         return self.SUM(c_prev, self.DEL(self.SUM(self.SUM(K1, self.MUL(K2, 2)), self.SUM(self.MUL(K3, 2), K4)), 6))
 
+    def clear_rusult(self):
+        result = []
+        for l in range(0, self.L):
+            result.append([0] * self.C)
+        return result
+
     def MUL(self, mass, m):
-        for l in range(0, self.L - 1):
+        result = self.clear_rusult()
+        for l in range(0, self.L):
             for i in range(0, self.C):
-                mass[l][i] = mass[l][i] * m
-        return mass
+                result[l][i] = mass[l][i] * m
+        return result
 
     def SUM(self, a, b):
-        for l in range(0, self.L - 1):
+        result = self.clear_rusult()
+        for l in range(0, self.L):
             for i in range(0, self.C):
-                a[l][i] = a[l][i] + b[l][i]
-        return a
+                result[l][i] = a[l][i] + b[l][i]
+        return result
 
     def DEL(self, d, e):
-        for l in range(0,self.L - 1):
+        result = self.clear_rusult()
+        for l in range(0,self.L):
             for i in range(0, self.C):
-                d[l][i] = d[l][i] / e
-        return d
+                result[l][i] = d[l][i] / e
+        return result
 
     def model(self, c_prev):
-        dc = []
-        for i in range(self.L):
-           dc.append([0]*self.C)
-        for l in range(0, self.L-1):
-            for a in range(0, self.C):
-                dc[l][a] = 0
+        dc = self.clear_rusult()
 
         for l in range(0, self.L-1):
 
@@ -172,6 +176,10 @@ class Diamond:
             rate = self.k1 * c_prev[l][0] * self.H
             dc[l][0] += -rate
             dc[l][1] += rate
+            #print'______'
+            #for i in range(0, self.C):
+            #       print dc[l][i]
+            #print'______'
             #2
             rate = self.k1 * c_prev[l][1] * self.H
             dc[l][1] += -rate
