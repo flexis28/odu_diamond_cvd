@@ -1,13 +1,19 @@
 module genetic.rate_population;
 
-import std.stdio;
 import std.algorithm;
 import std.array;
+import std.concurrency;
 import std.math;
 import std.random;
 import std.range;
+import std.stdio;
 import genetic.population;
 import ode;
+
+private void spawnRecalc(shared RatePopulation pop) {
+    auto ode = new Ode(pop);
+    ode.main_loop();
+}
 
 class RatePopulation : Population {
 
@@ -36,16 +42,16 @@ class RatePopulation : Population {
     private double _mark;
     private double _k1, _k2, _k4, _k4_1, _k4_2, _k5, _k6, _k7, _k8, _k9;
 
-    @property double k1() { return _k1; }
-    @property double k2() { return _k2; }
-    @property double k4() { return _k4; }
-    @property double k4_1() { return _k4_1; }
-    @property double k4_2() { return _k4_2; }
-    @property double k5() { return _k5; }
-    @property double k6() { return _k6; }
-    @property double k7() { return _k7; }
-    @property double k8() { return _k8; }
-    @property double k9() { return _k9; }
+    shared @property double k1() { return _k1; }
+    shared @property double k2() { return _k2; }
+    shared @property double k4() { return _k4; }
+    shared @property double k4_1() { return _k4_1; }
+    shared @property double k4_2() { return _k4_2; }
+    shared @property double k5() { return _k5; }
+    shared @property double k6() { return _k6; }
+    shared @property double k7() { return _k7; }
+    shared @property double k8() { return _k8; }
+    shared @property double k9() { return _k9; }
 
     private double[Ode.C] total;
     private double[Ode.C][Ode.L] cc;
@@ -64,14 +70,14 @@ class RatePopulation : Population {
     }
 
     override void print() {
-        writeln(k1, " ", _k2, " ", _k4, " ", _k5, " ", _k6, " ", _k7, " ", _k8, " ", _k9);
+        writeln(_k1, " ", _k2, " ", _k4, " ", _k5, " ", _k6, " ", _k7, " ", _k8, " ", _k9);
 
         writeln("CC = ", cc);
         writeln("YOYO = ", total);
     }
 
     override Population dup() {
-        return new RatePopulation(k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9);
+        return new RatePopulation(_k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9);
     }
 
     private void set_k4(double v) {
@@ -106,7 +112,29 @@ class RatePopulation : Population {
         recalcMark();
     }
 
-    void setCC(double[Ode.C][Ode.L] cc) {
+    Tid childLoop;
+    private void waitAndReset() {
+        if (childLoop != Tid.init) {
+            //writeln("wait ", values);
+            receiveOnly!bool();
+            childLoop = Tid.init;
+            //writeln("  reset ", values);
+        } else {
+            //writeln(" ok ", values);
+        }
+    }
+
+    override @property double mark() {
+        waitAndReset();
+        return _mark;
+    }
+
+    private void recalcMark() {
+        waitAndReset();
+        childLoop = spawn(&spawnRecalc, cast(shared) this);
+    }
+
+    shared void setCC(shared double[Ode.C][Ode.L] cc) {
         this.cc = cc;
 
         bool fail = false;
@@ -129,24 +157,20 @@ class RatePopulation : Population {
                     stars /= sum;
                     hydrogen /= sum;
                 }
-
             }
         }
 
         _mark = 0;
         if (!fail) {
             _mark = total[6];
-            _mark /= 1.0 + 10 * (stars - 0.116);
+            _mark /= 1.0 + 2 * (stars - 0.116);
         }
-    }
 
-    private void recalcMark() {
-        auto ode = new Ode(this);
-        ode.main_loop();
+        send(ownerTid, true);
     }
 
     override @property double[] values() {
-        return [k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9];
+        return [_k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9];
     }
 
     override Population crossWith(Population other) {
@@ -164,7 +188,4 @@ class RatePopulation : Population {
         return child;
     }
 
-    override @property double mark() {
-        return _mark;
-    }
 }

@@ -14,9 +14,9 @@ class Ode {
     private enum double maxt = 50.01;
     private enum double dt = 0.01;
 
-    private RatePopulation pop;
+    shared private RatePopulation pop;
 
-    this(RatePopulation pop) {
+    this(shared RatePopulation pop) {
         this.pop = pop;
     }
 
@@ -39,7 +39,7 @@ class Ode {
             }
         }
 
-        pop.setCC(cc);
+        pop.setCC(cast(shared) cc);
     }
 
     private auto RUN(in double[C][L] c_prev){
