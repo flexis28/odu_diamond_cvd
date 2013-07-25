@@ -142,28 +142,32 @@ class RatePopulation : Population {
 
         double stars = 0, hydrogen = 0;
         for (int l = 0; l < Ode.L; l++) {
+
+            double cs = 0;
             for (int j = 0; j < Ode.C;j++) {
                 if (isNaN(cc[l][j]) || cc[l][j] < 0) fail = true;
                 total[j] += cc[l][j];
-
+                cs += cc[l][j];
             }
 
-            if (!fail) {
-                stars = cc[l][1] + cc[l][2] * 2 + cc[l][3] + cc[l][7];
-                hydrogen = cc[l][0] * 2 + cc[l][1] + cc[l][4] + cc[l][8];
+            if (l == 0 && (abs(1 - cs) > 1e-8)) fail = true;
 
-                double sum = stars + hydrogen;
-                if (sum != 0) {
-                    stars /= sum;
-                    hydrogen /= sum;
-                }
-            }
+            stars = cc[l][1] + cc[l][2] * 2 + cc[l][3] + cc[l][7];
+            hydrogen = cc[l][0] * 2 + cc[l][1] + cc[l][4] + cc[l][8];
         }
 
         _mark = 0;
         if (!fail) {
-            _mark = total[6];
-            _mark /= 1.0 + 2 * (stars - 0.116);
+
+            double sum = stars + hydrogen;
+            if (sum != 0) {
+                stars /= sum;
+                hydrogen /= sum;
+            }
+
+            _mark = cc[1][6];
+            //_mark = total[6];
+            _mark /= 1.0 + 5 * abs(stars - 0.12); // около 12% звёздочек на поверхности
         }
 
         send(ownerTid, true);
