@@ -1,9 +1,11 @@
-import population;
+module genetic.genetic_algorithm;
+
 import std.stdio;
 import std.algorithm;
 import std.conv;
 import std.array;
 import std.random;
+import genetic.population;
 
 class GeneticAlgorithm {
     private enum EPS = 0.01;
@@ -25,23 +27,25 @@ class GeneticAlgorithm {
         }
     }
 
-    Population find(L)(L lambda) {
-        float[Population] fitnes;
+    Population find() {
+        double[Population] fitnes;
 
         int n = 0;
         while (true) {
             foreach (pop; _pops) {
-                fitnes[pop] = lambda(pop);
+                fitnes[pop] = pop.mark;
             }
 
-            sort!((a, b) { return fitnes[a] < fitnes[b]; })(_pops);
+            sort!((a, b) { return fitnes[a] > fitnes[b]; })(_pops);
 
-            if (n % 10000 == 0) {
-                writeln(n, " ", fitnes[best]);
+            if (n % 10 == 0) {
+                write(n, " => ");
+                writeln(fitnes[best]);
+                best.print();
             }
             n++;
 
-            if (lambda(best) <= EPS) break;
+            if (n == 1000) break;
 
             _pops = _pops[0 .. to!size_t(_pops.length * _selectFrac + 0.5)];
             while (_pops.length < _popsSize) makeChild();
@@ -49,7 +53,7 @@ class GeneticAlgorithm {
             randomMutate();
         }
 
-        writeln(n, " ", fitnes[best], ": ", best.values);
+        //writeln(n, " ", fitnes[best], ": ", best.values);
         return best;
     }
 
