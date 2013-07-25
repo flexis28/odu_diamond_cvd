@@ -1,5 +1,5 @@
 import std.stdio;
-import genetic_algorithm, population;
+import genetic_algorithm, parab_population;
 
 pure float f(float x) {
     return 3*x*x - 5*x + 8;
@@ -9,15 +9,15 @@ void main() {
     enum NP = 10;
     auto svalues = new float[NP];
     for (int i = 0; i < NP; ++i) svalues[i] = i;
-    auto stand = new Population(svalues);
+    auto stand = new ParabPopulation(svalues);
 
     auto fvalues = new float[NP];
     fvalues[] = 0;
-    auto first = new Population(fvalues);
+    auto first = new ParabPopulation(fvalues);
 
     auto ga = new GeneticAlgorithm(0.2, 0.1, first, 50);
 
-    auto pred = (Population a) { return a.diff!(f)(stand); };
+    auto pred = (ParabPopulation a) { return a.diff(f, stand); };
     auto best = ga.find(pred);
 
     writeln(stand.values);
