@@ -4,8 +4,8 @@ import std.string;
 import genetic.rate_population;
 
 class Ode {
-	static public enum C = 9;
-	static public enum L = 5;
+	static public enum uint C = 9;
+	static public enum uint L = 5;
 
     public enum float H = 1e-9;
     public enum float CH3 = 1e-10;
