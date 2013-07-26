@@ -2,7 +2,6 @@ import std.stdio;
 import std.math;
 
 import genetic.genetic_algorithm;
-import genetic.population;
 import genetic.rate_population;
 import ode;
 

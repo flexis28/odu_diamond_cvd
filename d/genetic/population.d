@@ -3,11 +3,11 @@ module genetic.population;
 interface Population {
 
     Population dup();
-    void mutate(double coef);
+    void mutate(float coef);
     Population crossWith(Population other);
 
-    @property double[] values();
+    @property float[] values();
 
     void print();
-    @property double mark();
+    @property real mark();
 }

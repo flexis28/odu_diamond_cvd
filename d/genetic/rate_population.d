@@ -39,26 +39,26 @@ class RatePopulation : Population {
     //k8 = 0.5
     //k9 = 3.5e8 * math.exp(-31.3/(1.98*T))
 
-    private double _mark;
-    private double _k1, _k2, _k4, _k4_1, _k4_2, _k5, _k6, _k7, _k8, _k9;
+    private real _mark;
+    private float _k1, _k2, _k4, _k4_1, _k4_2, _k5, _k6, _k7, _k8, _k9;
 
-    shared @property double k1() { return _k1; }
-    shared @property double k2() { return _k2; }
-    shared @property double k4() { return _k4; }
-    shared @property double k4_1() { return _k4_1; }
-    shared @property double k4_2() { return _k4_2; }
-    shared @property double k5() { return _k5; }
-    shared @property double k6() { return _k6; }
-    shared @property double k7() { return _k7; }
-    shared @property double k8() { return _k8; }
-    shared @property double k9() { return _k9; }
+    shared @property float k1() { return _k1; }
+    shared @property float k2() { return _k2; }
+    shared @property float k4() { return _k4; }
+    shared @property float k4_1() { return _k4_1; }
+    shared @property float k4_2() { return _k4_2; }
+    shared @property float k5() { return _k5; }
+    shared @property float k6() { return _k6; }
+    shared @property float k7() { return _k7; }
+    shared @property float k8() { return _k8; }
+    shared @property float k9() { return _k9; }
 
-    private double[Ode.C] total;
-    private double[Ode.C][Ode.L] cc;
+    private real[Ode.C] total;
+    private real[Ode.C][Ode.L] cc;
 
     Tid childLoop;
 
-    this(double k1, double k2, double k4, double k5, double k6, double k7, double k8, double k9) {
+    this(float k1, float k2, float k4, float k5, float k6, float k7, float k8, float k9) {
         _k1 = k1;
         _k2 = k2;
         set_k4(k4);
@@ -82,16 +82,16 @@ class RatePopulation : Population {
         return new RatePopulation(_k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9);
     }
 
-    private void set_k4(double v) {
+    private void set_k4(real v) {
         _k4 = v;
         _k4_1 = v * 10;
         _k4_2 = v * 0.1;
     }
 
-    override void mutate(double coef) {
+    override void mutate(float coef) {
         waitAndReset();
 
-        double l(double x, uint a, uint b) {
+        real l(real x, uint a, uint b) {
             if (coef * 50 - uniform(0, 100) < 0) return x;
             auto y = x * (coef * a * 0.5f - uniform(0, coef * a)) +
                 coef * b * 0.5f - uniform(0, coef * b);
@@ -122,7 +122,7 @@ class RatePopulation : Population {
         }
     }
 
-    override @property double mark() {
+    override @property real mark() {
         waitAndReset();
         return _mark;
     }
@@ -131,23 +131,23 @@ class RatePopulation : Population {
         childLoop = spawn(&spawnRecalc, cast(shared) this);
     }
 
-    shared void setCC(shared double[Ode.C][Ode.L] cc) {
+    shared void setCC(shared real[Ode.C][Ode.L] cc) {
         this.cc = cc;
 
         bool fail = false;
         total[] = 0;
 
-        double stars = 0, hydrogen = 0;
+        real stars = 0, hydrogen = 0;
         for (int l = 0; l < Ode.L; l++) {
 
-            double cs = 0;
+            real cs = 0;
             for (int j = 0; j < Ode.C;j++) {
                 if (isNaN(cc[l][j]) || cc[l][j] < 0) fail = true;
                 total[j] += cc[l][j];
                 cs += cc[l][j];
             }
 
-            if (l == 0 && (abs(1 - cs) > 1e-8)) fail = true;
+            if (l == 0 && (abs(1 - cs) > 1e-10)) fail = true;
 
             stars = cc[l][1] + cc[l][2] * 2 + cc[l][3] + cc[l][7];
             hydrogen = cc[l][0] * 2 + cc[l][1] + cc[l][4] + cc[l][8];
@@ -156,7 +156,7 @@ class RatePopulation : Population {
         _mark = 0;
         if (!fail) {
 
-            double sum = stars + hydrogen;
+            real sum = stars + hydrogen;
             if (sum != 0) {
                 stars /= sum;
                 hydrogen /= sum;
@@ -173,7 +173,7 @@ class RatePopulation : Population {
         send(ownerTid, true);
     }
 
-    override @property double[] values() {
+    override @property float[] values() {
         return [_k1, _k2, _k4, _k5, _k6, _k7, _k8, _k9];
     }
 
