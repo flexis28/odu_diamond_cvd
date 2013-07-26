@@ -30,18 +30,29 @@ void main() {
     //    3.32977e+07, // 9
     //);
 
-    auto first = new RatePopulation(
-        1.60955e+10,   // 1
-        25602.1,       // 2
-        33.4507,       // 4
-        2.13503,       // 5
-        1000,          // 6
+    //auto first = new RatePopulation(
+    //    1.60955e+10,   // 1
+    //    25602.1,       // 2
+    //    33.4507,       // 4
+    //    2.13503,       // 5
+    //    1000,          // 6
+    //    0,             // 7
+    //    0,             // 8
+    //    3.11379e+12,   // 9
+    //);
+
+    auto zero = new RatePopulation(
+        0,   // 1
+        0,       // 2
+        0,       // 4
+        0,       // 5
+        0,          // 6
         0,             // 7
         0,             // 8
-        3.11379e+12,   // 9
+        0,   // 9
     );
 
-    auto ga = new GeneticAlgorithm(0.3, 0.1, first, 50);
+    auto ga = new GeneticAlgorithm(0.3, 0.15, zero, 300);
     auto best = ga.find();
     best.print();
 

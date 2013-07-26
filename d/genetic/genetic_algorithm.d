@@ -38,7 +38,7 @@ class GeneticAlgorithm {
 
             sort!((a, b) { return fitnes[a] > fitnes[b]; })(_pops);
 
-            if (n % 10 == 0) {
+            if (n % 5 == 0) {
                 write(n, " => ");
                 writeln(fitnes[best]);
                 best.print();

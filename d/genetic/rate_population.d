@@ -56,6 +56,8 @@ class RatePopulation : Population {
     private double[Ode.C] total;
     private double[Ode.C][Ode.L] cc;
 
+    Tid childLoop;
+
     this(double k1, double k2, double k4, double k5, double k6, double k7, double k8, double k9) {
         _k1 = k1;
         _k2 = k2;
@@ -87,6 +89,8 @@ class RatePopulation : Population {
     }
 
     override void mutate(double coef) {
+        waitAndReset();
+
         double l(double x, uint a, uint b) {
             if (coef * 50 - uniform(0, 100) < 0) return x;
             auto y = x * (coef * a * 0.5f - uniform(0, coef * a)) +
@@ -95,24 +99,18 @@ class RatePopulation : Population {
             return y;
         };
 
-        //foreach (ref x; _values) {
-        //    // мутирует по дефолту неболее чем на 50% от всей популяции
-        //    x = l(x, 10, 250);
-        //}
-
-        _k1 = l(_k1, 100, 500);
-        _k2 = l(_k2, 100, 500); //2e13 * H;
-        set_k4(l(_k4, 100, 500));
-        _k5 = l(_k5, 10, 50); //0.01;
-        //k6 = l(_k6 = 1e13 * CH3;
-        _k7 = l(_k7, 500, 2500);
-        //k8 = l(_k8 = 0; //0.5;
-        _k9 = l(_k9, 500, 2500);
+        _k1 = l(_k1, 100, 5000);
+        _k2 = l(_k2, 100, 5000);
+        set_k4(l(_k4, 100, 5000));
+        _k5 = l(_k5, 10, 500);
+        _k6 = l(_k6, 10, 500);
+        _k7 = l(_k7, 500, 25000);
+        _k8 = l(_k8, 10, 50);
+        _k9 = l(_k9, 500, 25000);
 
         recalcMark();
     }
 
-    Tid childLoop;
     private void waitAndReset() {
         if (childLoop != Tid.init) {
             //writeln("wait ", values);
@@ -130,7 +128,6 @@ class RatePopulation : Population {
     }
 
     private void recalcMark() {
-        waitAndReset();
         childLoop = spawn(&spawnRecalc, cast(shared) this);
     }
 
@@ -165,9 +162,12 @@ class RatePopulation : Population {
                 hydrogen /= sum;
             }
 
-            _mark = cc[1][6];
             //_mark = total[6];
-            _mark /= 1.0 + 5 * abs(stars - 0.12); // около 12% звёздочек на поверхности
+            for (int l = Ode.L - 1; l >= 0; l--) {
+                _mark += cc[l][6] * pow(3, l + 1);
+            }
+
+            _mark /= 1.0 + 1000 * abs(stars - 0.12); // около 12% звёздочек на поверхности
         }
 
         send(ownerTid, true);
