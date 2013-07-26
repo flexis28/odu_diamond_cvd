@@ -4,15 +4,15 @@ import std.string;
 import genetic.rate_population;
 
 class Ode {
-	static public enum C = 9;
-	static public enum L = 5;
+	static public enum uint C = 9;
+	static public enum uint L = 5;
 
-    public enum double H = 1e-9;
-    public enum double CH3 = 1e-10;
-    public enum double T = 1200;
+    public enum float H = 1e-9;
+    public enum float CH3 = 1e-10;
+    public enum float T = 1200;
 
-    private enum double maxt = 50.01;
-    private enum double dt = 0.01;
+    private enum float maxt = 50.01;
+    private enum float dt = 0.01;
 
     shared private RatePopulation pop;
 
@@ -21,7 +21,7 @@ class Ode {
     }
 
     auto main_loop() {
-        double[C][L] cc;
+        real[C][L] cc;
         for(int l = 0; l < L; l++) cc[l][] = 0;
         cc[0][0] = 1;
 
@@ -31,7 +31,7 @@ class Ode {
     		cc = RUN(cc);
     	}
 
-        double[C] toel;
+        real[C] toel;
         toel[] = 0;
         for (int l = 0; l < L; l++) {
             for (int j = 0; j<C;j++) {
@@ -42,16 +42,16 @@ class Ode {
         pop.setCC(cast(shared) cc);
     }
 
-    private auto RUN(in double[C][L] c_prev){
-    	double[C][L] K1 = MUL(model(c_prev), dt);
-    	double[C][L] K2 = MUL(model(SUM(c_prev,DEL(K1, 2))), dt);
-    	double[C][L] K3 = MUL(model(SUM(c_prev, DEL(K2, 2))), dt);
-    	double[C][L] K4 = MUL(model(SUM(c_prev, K3)), dt);
+    private auto RUN(in real[C][L] c_prev){
+    	real[C][L] K1 = MUL(model(c_prev), dt);
+    	real[C][L] K2 = MUL(model(SUM(c_prev,DEL(K1, 2))), dt);
+    	real[C][L] K3 = MUL(model(SUM(c_prev, DEL(K2, 2))), dt);
+    	real[C][L] K4 = MUL(model(SUM(c_prev, K3)), dt);
     	return SUM(c_prev, DEL(SUM(SUM(K1, MUL(K2, 2)), SUM(MUL(K3,2), K4)), 6));
     }
 
-    private auto MUL(in double[C][L] array, double m){
-    	double[C][L] result;
+    private auto MUL(in real[C][L] array, real m){
+    	real[C][L] result;
         for(int l = 0; l < L; l++){
     		for(int i = 0; i < C; i++){
     			result[l][i] = array[l][i] * m;
@@ -60,8 +60,8 @@ class Ode {
     	return result;
     }
 
-    private auto SUM(in double[C][L] a, in double[C][L] b){
-        double[C][L] result;
+    private auto SUM(in real[C][L] a, in real[C][L] b){
+        real[C][L] result;
     	for(int l = 0; l < L; l++){
     		for(int i = 0; i < C; i++){
     			result[l][i] = a[l][i] + b[l][i];
@@ -70,8 +70,8 @@ class Ode {
         return result;
     }
 
-    private auto DEL(in double[C][L] d, double e){
-        double[C][L] result;
+    private auto DEL(in real[C][L] d, real e){
+        real[C][L] result;
     	for(int l = 0; l < L; l++){
     		for(int i = 0; i < C; i++){
     			result[l][i] = d[l][i] / e;
@@ -80,9 +80,9 @@ class Ode {
     	return result;
     }
 
-    private auto model(in double[C][L] c_prev){
-    	double rate;
-    	double[C][L] dc;
+    private auto model(in real[C][L] c_prev){
+    	real rate;
+    	real[C][L] dc;
     	for(int l = 0; l < L; l++){
     		dc[l][] = 0;
     	}
@@ -201,8 +201,8 @@ class Ode {
             //Migracia mostovoi gruppi
             for(int a = 0; a < 3; a++){
                 //1
-                double rate1 = pop.k7 * pow(c_prev[l][7], 2) * c_prev[l][8] * c_prev[l+1][a];
-                double rate2 = pop.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1] * c_prev[l+1][a];
+                real rate1 = pop.k7 * pow(c_prev[l][7], 2) * c_prev[l][8] * c_prev[l+1][a];
+                real rate2 = pop.k7 * c_prev[l][6] * c_prev[l][7] * c_prev[l][1] * c_prev[l+1][a];
                 dc[l][6] += rate1 + (-rate2);
                 dc[l][7] += -rate1 + rate2;
                 dc[l][8] += -rate1 + rate2;
